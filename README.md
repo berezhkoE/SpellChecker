@@ -1,10 +1,10 @@
 # Spellchecker
 
-Simple command line spell checker.
+Simple command line spell checker for English language.
 
 ## Usage
 
-* Execute `gradle assembleDist` command.
+* Execute `./gradlew assembleDist` command.
 * Unpack `build/distributions/SpellChecker-1.0-SNAPSHOT.zip`
 * Run commands as follows: `sh .../SpellChecker-1.0-SNAPSHOT/bin/SpellChecker [-f <file_name>]`
 * Spell Checker runs in two modes: 
@@ -27,7 +27,7 @@ Simple command line spell checker.
 To rank suggestions the modified Damerau-Levenshtein distance is used:
 * The distance for insertion and deletion operation is same, that is 1. 
 * For the substitution operation, the initial distance is 2, which equals one deletion and one insertion.
-  To calculate the substitution distance, two letters are compared and checked whether both are in the same group or not. 
+  To calculate the substitution distance, two letters are compared and checked whether both are in the same (phonetic or typographic) group or not. 
   If they are in the same group, the initial distance is then subtracted with each distance group.
 * After collecting suggestions distances are modified using weighted words frequencies
 
