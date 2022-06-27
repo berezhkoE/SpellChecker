@@ -63,5 +63,5 @@ private fun generateCommandLine(options: Options, args: Array<String>): CommandL
 private fun printHelp(options: Options) {
   val helpFormatter = HelpFormatter()
   val footer = "If no file passed Spell Checker waits for stdin"
-  helpFormatter.printHelp("SpellChecker","", options, footer, true)
+  helpFormatter.printHelp("SpellChecker", "", options, footer, true)
 }
