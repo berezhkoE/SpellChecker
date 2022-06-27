@@ -28,7 +28,7 @@ class SpellChecker {
             result = suggester.collectSuggestions(lowercaseWord)
           }
 
-          if (result.isNotEmpty() && result.first().second > 0.0) {
+          if (result.isNotEmpty() && result.first().second != 0.0) {
             if (!anySuggestions) {
               println("Suggestions:")
               anySuggestions = true

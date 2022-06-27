@@ -15,35 +15,30 @@ class Suggester {
   private val freqDist = 0.4
 
   private val dictionaryRoot = Dictionary.trieRoot
-  private val frequencyDict: Map<String, Double>
 
   private val distance = DamerauLevenshteinDistance(initialSubDist, soundexDist, phonixDist, editexDist, qwertyDist)
 
   init {
     Dictionary.initDictionary()
-    frequencyDict = Dictionary.frequencyDict!!
   }
 
   fun collectSuggestions(word: String): List<Pair<String, Double>> {
     val searchResult = search(word)
 
-    if (searchResult.size > 1) {
-      return searchResultsModifiedByFrequency(searchResult)
-    }
-    return searchResult.toList()
+    return searchResultsModifiedByFrequency(searchResult)
   }
 
   /**
-   * Modify results' distances depending on words frequencies
+   * Modify results' distances depending on words frequencies and then sort and take top [maxSuggestions]
    */
-  private fun searchResultsModifiedByFrequency(searchResult: Map<String, Double>): List<Pair<String, Double>> {
-    val frequencies = searchResult.map { (word, _) -> frequencyDict[word]!!.toDouble() }
+  private fun searchResultsModifiedByFrequency(searchResult: Map<Dictionary.TrieNode, Double>): List<Pair<String, Double>> {
+    val frequencies = searchResult.map { (node, _) -> node.frequency }
 
     return searchResult.toList()
-      .map { (word, dist) ->
+      .map { (node, dist) ->
         Pair(
-          word,
-          dist - normalize(frequencyDict.getOrDefault(word, 0.0), frequencies.max(), frequencies.min())
+          node.word!!,
+          maxOf(dist - normalize(node.frequency, frequencies.max(), frequencies.min()), 0.0)
         )
       }
       .sortedBy { (_, dist) -> dist }
@@ -53,8 +48,8 @@ class Suggester {
   /**
    * Collect suggestions using modified [DamerauLevenshteinDistance]
    */
-  private fun search(word: String): Map<String, Double> {
-    val result = mutableMapOf<String, Double>()
+  private fun search(word: String): Map<Dictionary.TrieNode, Double> {
+    val result = mutableMapOf<Dictionary.TrieNode, Double>()
     val previousRow = distance.getFirstRow(word)
 
     for ((letter, node) in dictionaryRoot.children) {
@@ -64,11 +59,11 @@ class Suggester {
   }
 
   private fun searchRec(
-    node: TrieNode,
+    node: Dictionary.TrieNode,
     letter: Char,
     word: String,
     previousRow: DoubleArray,
-    results: MutableMap<String, Double>,
+    results: MutableMap<Dictionary.TrieNode, Double>,
     prevLetter: Char? = null,
     prevPreviousRow: DoubleArray? = null,
     maxCost: Double = maxDist
@@ -79,7 +74,7 @@ class Suggester {
       if (currentRow.last() == 0.0) {
         results.clear()
       }
-      results[node.word!!] = currentRow.last()
+      results[node] = currentRow.last()
     }
 
     if (currentRow.min() <= maxCost && currentRow.last() > 0) {
@@ -93,6 +88,9 @@ class Suggester {
   }
 
   private fun normalize(value: Double, max: Double, min: Double): Double {
+    if (max == min) {
+      return value * freqDist
+    }
     return (value - min) / (max - min) * freqDist
   }
 }
