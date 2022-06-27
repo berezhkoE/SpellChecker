@@ -77,7 +77,7 @@ class Suggester {
       results[node] = currentRow.last()
     }
 
-    if (currentRow.min() <= maxCost && currentRow.last() > 0) {
+    if (currentRow.min() <= maxCost) {
       for ((l, child) in node.children) {
         if (results.size == 1 && results.containsValue(0.0)) {
           break
