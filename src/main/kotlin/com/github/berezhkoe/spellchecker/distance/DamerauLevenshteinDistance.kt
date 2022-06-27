@@ -6,7 +6,22 @@ import org.jetbrains.annotations.TestOnly
  * Calculates Damerau-Levenshtein distance.
  * Modified distance takes into consideration typographic and phonetic distances
  */
-class DamerauLevenshteinDistance(private val modified: Boolean = true) {
+class DamerauLevenshteinDistance(
+  initialSubDist: Double = 2.0,
+  soundexDist: Double = 0.6,
+  phonixDist: Double = 0.2,
+  editexDist: Double = 0.2,
+  qwertyDist: Double = 0.6,
+  private val modified: Boolean = true
+) {
+
+  private val substitutionDistance: SubstitutionDistance = SubstitutionDistance(
+    initialSubDist,
+    soundexDist,
+    phonixDist,
+    editexDist,
+    qwertyDist
+  )
 
   @TestOnly
   fun getDistance(source: String, target: String): Double {
@@ -50,7 +65,7 @@ class DamerauLevenshteinDistance(private val modified: Boolean = true) {
 
     for (column in 1 until columns) {
       val cost = if (word[column - 1] == letter) 0 else 1
-      val subCost = if (modified) SubstitutionDistance(word[column - 1], letter).getDistance() else cost.toDouble()
+      val subCost = if (modified) substitutionDistance.getDistance(word[column - 1], letter) else cost.toDouble()
       currentRow[column] = minOf(
         previousRow[column] + 1, // deletion
         currentRow[column - 1] + 1, // insertion

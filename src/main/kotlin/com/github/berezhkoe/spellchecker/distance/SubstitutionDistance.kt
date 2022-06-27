@@ -1,11 +1,15 @@
 package com.github.berezhkoe.spellchecker.distance
 
-import com.github.berezhkoe.spellchecker.*
-
 /**
  * Modified substitution cost that considers typographic and phonetic distances
  */
-class SubstitutionDistance(private val first: Char, private val second: Char) {
+class SubstitutionDistance(
+  private val initialSubDist: Double,
+  soundexDist: Double,
+  phonixDist: Double,
+  editexDist: Double,
+  qwertyDist: Double
+) {
   private val soundexGroups: List<HashSet<Char>> = listOf(
     hashSetOf('a', 'e', 'i', 'o', 'u', 'y', 'h', 'w'),
     hashSetOf('b', 'p', 'f', 'v'),
@@ -74,15 +78,15 @@ class SubstitutionDistance(private val first: Char, private val second: Char) {
     qwertyGroups to qwertyDist
   )
 
-  fun getDistance(): Double {
+  fun getDistance(first: Char, second: Char): Double {
     if (first == second) {
       return 0.0
     }
 
-    return groupings.entries.fold(initialSubDist) { acc, (groups, dist) -> acc.resolveGrouping(groups, dist) }
+    return groupings.entries.fold(initialSubDist) { acc, (groups, dist) -> acc.resolveGrouping(groups, dist, first, second) }
   }
 
-  private fun Double.resolveGrouping(groups: List<HashSet<Char>>, dist: Double): Double {
+  private fun Double.resolveGrouping(groups: List<HashSet<Char>>, dist: Double, first: Char, second: Char): Double {
     for (group in groups) {
       if (first in group && second in group) {
         return this - dist

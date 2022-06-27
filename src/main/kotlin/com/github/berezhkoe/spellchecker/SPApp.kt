@@ -10,20 +10,28 @@ fun main(args: Array<String>) {
   val options: Options = generateOptions()
   val commandLine: CommandLine? = generateCommandLine(options, args)
   if (commandLine != null) {
-    if (commandLine.hasOption("f")) {
-      val optionValues = commandLine.getOptionValues("f")
-      try {
-        File(optionValues[0]).inputStream().use {
-          SpellChecker().check(it)
+    try {
+      if (commandLine.hasOption("f")) {
+        val optionValues = commandLine.getOptionValues("f")
+        try {
+          File(optionValues[0]).inputStream().use {
+            SpellChecker().check(it)
+          }
+        } catch (exception: FileNotFoundException) {
+          println(exception.message)
+          exitProcess(-1)
         }
-      } catch (exception: FileNotFoundException) {
-        println(exception.message)
-        exitProcess(-1)
+      } else if (commandLine.hasOption("h")) {
+        printHelp(options)
+      } else {
+        SpellChecker().check(System.`in`)
       }
-    } else if (commandLine.hasOption("h")) {
-      printHelp(options)
-    } else {
-      SpellChecker().check(System.`in`)
+    } catch (exception: SPException) {
+      println(exception.message)
+      exitProcess(-1)
+    } catch (exception: Exception) {
+      println(exception.message)
+      exitProcess(-1)
     }
   } else {
     printHelp(options)

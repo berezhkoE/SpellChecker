@@ -3,8 +3,6 @@ package com.github.berezhkoe.spellchecker
 import java.io.InputStream
 
 object Dictionary {
-  private val dictInputStream: InputStream? = javaClass.classLoader.getResourceAsStream("en-80k.txt")
-
   val trieRoot = TrieNode()
   var frequencyDict: Map<String, Double>? = null
 
@@ -24,6 +22,7 @@ object Dictionary {
       var totalCount = 0L
       val words = mutableMapOf<String, Long>()
 
+      val dictInputStream: InputStream? = javaClass.classLoader.getResourceAsStream("en-80k.txt")
       dictInputStream?.bufferedReader()?.forEachLine { line ->
         line.split(" ", limit = 2).let { (word, count) ->
           insert(word)

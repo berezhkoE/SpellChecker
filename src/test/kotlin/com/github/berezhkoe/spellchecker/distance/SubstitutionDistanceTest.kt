@@ -1,26 +1,33 @@
 package com.github.berezhkoe.spellchecker.distance
 
-import com.github.berezhkoe.spellchecker.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class SubstitutionDistanceTest {
+  private val initialSubDist = 2.0
+
+  private val soundexDist = 0.6
+  private val phonixDist = 0.2
+  private val editexDist = 0.2
+  private val qwertyDist = 0.6
+
+  private val substitutionDistance = SubstitutionDistance(initialSubDist, soundexDist, phonixDist, editexDist, qwertyDist)
 
   @Test
   fun `test same`() {
-    assertEquals(0.0, SubstitutionDistance('q', 'q').getDistance())
+    assertEquals(0.0, substitutionDistance.getDistance('q', 'q'))
   }
 
   @Test
   fun `test chars from different groups`() {
-    assertEquals(initialSubDist, SubstitutionDistance('q', 'm').getDistance())
+    assertEquals(initialSubDist, substitutionDistance.getDistance('q', 'm'))
   }
 
   @Test
   fun `test chars with all common groups`() {
     assertEquals(
       initialSubDist - soundexDist - phonixDist - editexDist - qwertyDist,
-      SubstitutionDistance('m', 'n').getDistance()
+      substitutionDistance.getDistance('m', 'n')
     )
   }
 
@@ -28,7 +35,7 @@ class SubstitutionDistanceTest {
   fun `test misspelled chars`() {
     assertEquals(
       initialSubDist - soundexDist - phonixDist - editexDist,
-      SubstitutionDistance('o', 'a').getDistance()
+      substitutionDistance.getDistance('o', 'a')
     )
   }
 
@@ -36,7 +43,7 @@ class SubstitutionDistanceTest {
   fun `test completely different chars`() {
     assertEquals(
       initialSubDist,
-      SubstitutionDistance('h', 'd').getDistance()
+      substitutionDistance.getDistance('h', 'd')
     )
   }
 }
