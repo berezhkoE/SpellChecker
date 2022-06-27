@@ -2,6 +2,7 @@ package com.github.berezhkoe.spellchecker
 
 import org.apache.commons.cli.*
 import java.io.File
+import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 
 
@@ -11,8 +12,13 @@ fun main(args: Array<String>) {
   if (commandLine != null) {
     if (commandLine.hasOption("f")) {
       val optionValues = commandLine.getOptionValues("f")
-      File(optionValues[0]).inputStream().use {
-        SpellChecker().check(it)
+      try {
+        File(optionValues[0]).inputStream().use {
+          SpellChecker().check(it)
+        }
+      } catch (exception: FileNotFoundException) {
+        println(exception.message)
+        exitProcess(-1)
       }
     } else if (commandLine.hasOption("h")) {
       printHelp(options)
