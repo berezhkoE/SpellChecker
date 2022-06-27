@@ -34,6 +34,8 @@ class SpellChecker {
               anySuggestions = true
             }
             printSuggestions(word, result.toMap().keys, index, count)
+          } else if (result.isEmpty()) {
+            printSuggestions(word, emptySet(), index, count)
           }
         }
       }
@@ -48,6 +50,10 @@ class SpellChecker {
   }
 
   private fun printSuggestions(word: String, suggestions: Set<String>, index: Int, line: Int) {
-    println("\t$line:${index + 1} : $ansiYellow$word$ansiReset -> $ansiGreen$suggestions$ansiReset")
+    if (suggestions.isEmpty()) {
+      println("\t$line:${index + 1} : $ansiYellow$word$ansiReset -> No suggestions")
+    } else {
+      println("\t$line:${index + 1} : $ansiYellow$word$ansiReset -> $ansiGreen$suggestions$ansiReset")
+    }
   }
 }
