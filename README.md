@@ -20,7 +20,7 @@ Simple command line spell checker for English language.
   super-sourcez
       3:2 : sourcez -> [sources, source, sourced]
 ```
-* Words with digits in it are not considered.
+* Words containing numbers are not considered.
 
 ## Suggestion algorithm
 
