@@ -9,6 +9,11 @@ class SpellChecker {
 
   private val distance = DamerauLevenshteinDistance()
 
+  /**
+   * Split line by punctuation, underscore, whitespace characters and capital letters
+   */
+  private val splitRegex = Regex("[\\W_]+|(?=[A-Z])")
+
   init {
     Dictionary.initDictionary()
     frequencyDict = Dictionary.frequencyDict!!
@@ -22,12 +27,10 @@ class SpellChecker {
       count++
 
       if (line.isNotEmpty()) {
-        line.trim().split("_|(?=[A-Z])|\\s+".toRegex()).forEachIndexed { index, word ->
-          var result = emptyList<Pair<String, Double>>()
+        getWords(line).forEachIndexed { index, word ->
+          var result: List<Pair<String, Double>>
           word.lowercase().let { lowercaseWord ->
-            if (word.all { c -> c.isLetter() }) {
-              result = collectSuggestions(lowercaseWord)
-            }
+            result = collectSuggestions(lowercaseWord)
           }
 
           if (result.isNotEmpty() && result.first().second > 0.0) {
@@ -43,6 +46,10 @@ class SpellChecker {
     if (!anySuggestions) {
       println("${ansiGreen}Everything is correct!$ansiReset")
     }
+  }
+
+  fun getWords(line: String): List<String> {
+    return line.trim().split(splitRegex).filter { it.isNotEmpty() && it.all { c -> c.isLetter() }}
   }
 
   fun collectSuggestions(word: String): List<Pair<String, Double>> {

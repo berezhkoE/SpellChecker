@@ -11,13 +11,16 @@ Simple command line spell checker.
   * `-f` option to check file
   * No arguments to check standard input
 * Output format: `<line_number>:<word_number> : <word_to_correct> -> <suggestions>`
-* Words written in camelCase and snake_case are treated as separate words:
+* Words written in camelCase, snake_case and kebab-case are treated as separate words:
 ```
   superSourcez
       1:2 : Sourcez -> [sources, source, sourced]
   super_sourcez
       2:2 : sourcez -> [sources, source, sourced]
+  super-sourcez
+      3:2 : sourcez -> [sources, source, sourced]
 ```
+* Words with digits in it are not considered.
 
 ## Suggestion algorithm
 
